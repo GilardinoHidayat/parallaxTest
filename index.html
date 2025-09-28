@@ -43,6 +43,20 @@
         transition: transform 0.35s cubic-bezier(0.4, 0.2, 0.2, 1);
         pointer-events: none;
       }
+      /* Tambahkan style khusus untuk layer6 (rain) */
+      #layer6 {
+        width: 200vw;
+        height: 200vh;
+        top: -50vh;
+        left: -15vw;
+        background-size: auto 30%;
+        background-repeat: repeat;
+        /* Atur agar tetap di tengah dan tidak blur */
+        image-rendering: pixelated;
+        filter: none;
+        pointer-events: none;
+        opacity: 0.4; /* Tambahkan transparansi 40% */
+      }
       .content {
         position: absolute;
         z-index: 10;
@@ -66,7 +80,7 @@
     </style>
   </head>
   <body>
-    <div
+    <!-- <div
       id="theme-switcher"
       style="
         position: absolute;
@@ -86,12 +100,13 @@
         Contoh: <b>resource/city 2/1.png</b> dst.<br />
         <i>Duplikat tombol di script untuk menambah pilihan.</i>
       </div>
-    </div>
+    </div> -->
     <div class="parallax-layer" id="layer1" style="background-image: url('resource/city 1/1.png'); z-index: 1; top: -5px"></div>
     <div class="parallax-layer" id="layer2" style="background-image: url('resource/city 1/2.png'); z-index: 2; top: -5px"></div>
     <div class="parallax-layer" id="layer3" style="background-image: url('resource/city 1/3.png'); z-index: 3; top: 20px"></div>
     <div class="parallax-layer" id="layer4" style="background-image: url('resource/city 1/4.png'); z-index: 4; top: 20px"></div>
     <div class="parallax-layer" id="layer5" style="background-image: url('resource/city 1/5.png'); z-index: 5; top: 20px"></div>
+    <div class="parallax-layer" id="layer6" style="background-image: url('resource/city 1/rainn.gif'); z-index: 6"></div>
     <div class="content">
       <div>
         <h1>Mouse Parallax City</h1>
@@ -104,15 +119,18 @@
           const layer = document.getElementById('layer' + i);
           layer.style.backgroundImage = `url('resource/${folder}/${i}.png')`;
         }
+        // Ganti rain layer ke rainn.gif tanpa animasi JS
+        document.getElementById('layer6').style.backgroundImage = `url('resource/${folder}/rainn.gif')`;
       }
-      // Parallax speed factors (background to foreground)
-      const speeds = [0.1, 0.2, 0.25, 0.5, 1];
+      // Parallax speed factors (background to foreground, rain layer slightly in front)
+      const speeds = [0.1, 0.2, 0.25, 0.5, 1, 2];
       const layers = [
         document.getElementById('layer1'),
         document.getElementById('layer2'),
         document.getElementById('layer3'),
         document.getElementById('layer4'),
         document.getElementById('layer5'),
+        document.getElementById('layer6'),
       ];
       let target = { x: 0, y: 0 };
       let current = { x: 0, y: 0 };
@@ -135,10 +153,8 @@
       window.addEventListener('mousemove', (e) => {
         const w = window.innerWidth;
         const h = window.innerHeight;
-        // Centered range: -1 to 1
         const x = (e.clientX / w - 0.5) * 2;
         const y = (e.clientY / h - 0.5) * 2;
-        // Max movement in px (lebih kecil agar tidak muncul area kosong di tepi)
         target.x = x * w * 0.045;
         target.y = y * h * 0.045;
       });
