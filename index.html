@@ -139,6 +139,15 @@
         return a + (b - a) * t;
       }
 
+      // Responsive parallax strength based on window width
+      function getParallaxStrength() {
+        // Nilai 0.045 pada desktop, lebih besar pada mobile agar feeling sama
+        // 0.045 * 1920 ≈ 86px max movement per axis pada layar besar
+        // 0.045 * 390 ≈ 17px pada layar mobile, terlalu kecil
+        // Maka gunakan rasio tetap, misal 5% dari lebar/tinggi window
+        return Math.max(window.innerWidth, window.innerHeight) * 0.05;
+      }
+
       function animateParallax() {
         current.x = lerp(current.x, target.x, 0.12);
         current.y = lerp(current.y, target.y, 0.12);
@@ -150,13 +159,19 @@
         requestAnimationFrame(animateParallax);
       }
 
+      function updateTargetFromPointer(xNorm, yNorm) {
+        // xNorm, yNorm: -1 ... 1
+        const strength = getParallaxStrength();
+        target.x = xNorm * strength;
+        target.y = yNorm * strength;
+      }
+
       window.addEventListener('mousemove', (e) => {
         const w = window.innerWidth;
         const h = window.innerHeight;
-        const x = (e.clientX / w - 0.5) * 2;
-        const y = (e.clientY / h - 0.5) * 2;
-        target.x = x * w * 0.045;
-        target.y = y * h * 0.045;
+        const xNorm = (e.clientX / w - 0.5) * 2;
+        const yNorm = (e.clientY / h - 0.5) * 2;
+        updateTargetFromPointer(xNorm, yNorm);
       });
 
       window.addEventListener(
@@ -166,14 +181,20 @@
             const t = e.touches[0];
             const w = window.innerWidth;
             const h = window.innerHeight;
-            const x = (t.clientX / w - 0.5) * 2;
-            const y = (t.clientY / h - 0.5) * 2;
-            target.x = x * w * 0.045;
-            target.y = y * h * 0.045;
+            const xNorm = (t.clientX / w - 0.5) * 2;
+            const yNorm = (t.clientY / h - 0.5) * 2;
+            updateTargetFromPointer(xNorm, yNorm);
           }
         },
         { passive: true }
       );
+
+      // Reset parallax strength on resize
+      window.addEventListener('resize', () => {
+        // Recalculate target so effect stays proportional
+        target.x = 0;
+        target.y = 0;
+      });
 
       animateParallax();
     </script>
