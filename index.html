@@ -119,7 +119,8 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background 0.2s, opacity 0.4s;
+        opacity: 1;
       "
     >
       <!-- Icon fullscreen SVG 1:1 -->
@@ -231,8 +232,32 @@
 
       animateParallax();
 
-      // Fullscreen toggle logic
+      // --- Hide fullscreen button after 15s of inactivity ---
       const fullscreenBtn = document.getElementById('fullscreen-btn');
+      let hideFsTimeout;
+
+      function showFullscreenBtn() {
+        fullscreenBtn.style.opacity = '1';
+        fullscreenBtn.style.pointerEvents = 'auto';
+      }
+      function hideFullscreenBtn() {
+        fullscreenBtn.style.opacity = '0';
+        fullscreenBtn.style.pointerEvents = 'none';
+      }
+      function resetFullscreenBtnTimer() {
+        showFullscreenBtn();
+        clearTimeout(hideFsTimeout);
+        hideFsTimeout = setTimeout(hideFullscreenBtn, 3000);
+      }
+
+      // Show on any user activity
+      ['mousemove', 'mousedown', 'keydown', 'touchstart', 'touchmove'].forEach((ev) =>
+        window.addEventListener(ev, resetFullscreenBtnTimer, { passive: true })
+      );
+      // Start timer on load
+      resetFullscreenBtnTimer();
+
+      // Fullscreen toggle logic
       const fullscreenIcon = document.getElementById('fullscreen-icon');
       let isFullscreen = false;
 
@@ -248,7 +273,7 @@
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
+        else if (document.msExitFullscreen) docElm.msExitFullscreen();
       }
 
       function updateFullscreenIcon() {
